@@ -2,21 +2,35 @@
 
 namespace App\Controller\Api;
 
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Attribute\Route;
+use App\Entity\Restaurant;
+use App\Form\RestaurantType;
+use App\Repository\RestaurantRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
+use Symfony\Component\Serializer\SerializerInterface;
 
-class RestaurantController extends \Symfony\Bundle\FrameworkBundle\Controller\AbstractController
+#[Route('api/restaurants')]
+class RestaurantController extends AbstractController
 {
-
-    #[Route(
-        path: '/api/restaurants',
-        name: 'api_restaurants',
-        methods: ['GET']
-    )]
-    public function index(){
-        return new JsonResponse([
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/RestaurantController.php',
-        ]);
+    public function __construct(
+        private readonly RestaurantRepository $restaurantRepository
+    ) {
     }
+
+
+    #[Route('/', name: 'api_restaurant_index', methods: ['GET'])]
+    public function index(SerializerInterface $serializer): Response
+    {
+        $restaurants = $this->restaurantRepository->findAll();
+        return new Response(
+            $serializer->serialize($restaurants, 'json', ['groups' => 'restaurant:read']),
+            200,
+            ['Content-Type' => 'application/json']
+        );
+    }
+
 }

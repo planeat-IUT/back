@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\RestaurantRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: RestaurantRepository::class)]
 class Restaurant
@@ -11,48 +12,61 @@ class Restaurant
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['restaurant:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['restaurant:read'])]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['restaurant:read'])]
     private ?string $description = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['restaurant:read'])]
     private ?string $adresse = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['restaurant:read'])]
     private ?string $complement = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['restaurant:read'])]
     private ?string $code_postal = null;
 
     #[ORM\Column(length: 255)]
     private ?string $siret = null;
 
     #[ORM\Column]
+    #[Groups(['restaurant:read'])]
     private ?float $longitude = null;
 
     #[ORM\Column]
+    #[Groups(['restaurant:read'])]
     private ?float $latitude = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['restaurant:read'])]
     private ?string $mail = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['restaurant:read'])]
     private ?string $telephone = null;
 
     #[ORM\Column(length: 255)]
     private ?string $rib = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['restaurant:read'])]
     private ?string $logo = null;
 
     #[ORM\Column]
+    #[Groups(['restaurant:read'])]
     private ?int $nb_table = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['restaurant:read'])]
     private ?bool $a_decouvrir = null;
 
     public function getId(): ?int
