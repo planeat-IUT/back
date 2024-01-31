@@ -10,7 +10,7 @@ class RestaurantController extends \Symfony\Bundle\FrameworkBundle\Controller\Ab
 
     #[Route(
         path: '/api/restaurants',
-        name: 'api_restaurants', 
+        name: 'api_restaurants',
         methods: ['GET']
     )]
     public function index(){
