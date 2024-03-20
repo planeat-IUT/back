@@ -86,6 +86,9 @@ class Restaurant
     #[ORM\OneToMany(mappedBy: 'restaurant', targetEntity: Commande::class, orphanRemoval: true)]
     private Collection $commandes;
 
+    #[ORM\ManyToMany(targetEntity: Utilisateur::class)]
+    private Collection $administrateur;
+
     public function __construct()
     {
         $this->reservations = new ArrayCollection();
@@ -93,6 +96,7 @@ class Restaurant
         $this->plats = new ArrayCollection();
         $this->tables = new ArrayCollection();
         $this->commandes = new ArrayCollection();
+        $this->administrateur = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -414,6 +418,30 @@ class Restaurant
                 $commande->setRestaurant(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Utilisateur>
+     */
+    public function getAdministrateur(): Collection
+    {
+        return $this->administrateur;
+    }
+
+    public function addAdministrateur(Utilisateur $administrateur): static
+    {
+        if (!$this->administrateur->contains($administrateur)) {
+            $this->administrateur->add($administrateur);
+        }
+
+        return $this;
+    }
+
+    public function removeAdministrateur(Utilisateur $administrateur): static
+    {
+        $this->administrateur->removeElement($administrateur);
 
         return $this;
     }

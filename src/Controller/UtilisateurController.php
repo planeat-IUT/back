@@ -49,15 +49,26 @@ final class UtilisateurController extends \Symfony\Bundle\FrameworkBundle\Contro
     #[Route(path: '/login', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
+        if($this->getUser()) {
+            return $this->redirectToRoute('admin');
+        }
+
         // get the login error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();
 
         // last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();
 
-        return $this->render('utilisateur/login.html.twig', [
+        return $this->render('@EasyAdmin/page/login.html.twig', [
             'last_username' => $lastUsername,
             'error' => $error,
+            'favicon_path' => 'icons/icon_off.svg',
+            'csrf_token_intention' => 'authenticate',
+            'page_title' => '<img src="icons/icon_off.svg"><br><p>Planeat Corp.</p> ',
+            'username_label' => 'Email',
+            'password_label' => 'Mot de passe',
+            'sign_in_label' => 'Connexion',
+            'target_path' => $this->generateUrl('admin')
         ]);
     }
 
