@@ -6,8 +6,11 @@ use App\Repository\RestaurantRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
+#[Vich\Uploadable]
 #[ORM\Entity(repositoryClass: RestaurantRepository::class)]
 class Restaurant
 {
@@ -59,9 +62,12 @@ class Restaurant
     #[ORM\Column(length: 255)]
     private ?string $rib = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type: 'string', length: 255)]
     #[Groups(['restaurant:read'])]
-    private ?string $logo = null;
+    private ?string $logo = '';
+
+    #[Vich\UploadableField(mapping: 'restaurant_image', fileNameProperty: 'logo')]
+    private ?File $logoFile = null;
 
     #[ORM\Column]
     #[Groups(['restaurant:read'])]
@@ -71,13 +77,13 @@ class Restaurant
     #[Groups(['restaurant:read'])]
     private ?bool $a_decouvrir = null;
 
-    #[ORM\OneToMany(mappedBy: 'Restaurant', targetEntity: Reservation::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'restaurant', targetEntity: Reservation::class, orphanRemoval: true)]
     private Collection $reservations;
 
-    #[ORM\OneToMany(mappedBy: 'Restaurant', targetEntity: Avis::class)]
+    #[ORM\OneToMany(mappedBy: 'restaurant', targetEntity: Avis::class)]
     private Collection $avis;
 
-    #[ORM\OneToMany(mappedBy: 'restaurant', targetEntity: Plat::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'restaurant', targetEntity: Plat::class, cascade: ["persist"], orphanRemoval: true)]
     private Collection $plats;
 
     #[ORM\OneToMany(mappedBy: 'restaurant', targetEntity: Table::class, orphanRemoval: true)]
@@ -86,7 +92,10 @@ class Restaurant
     #[ORM\OneToMany(mappedBy: 'restaurant', targetEntity: Commande::class, orphanRemoval: true)]
     private Collection $commandes;
 
-    #[ORM\ManyToMany(targetEntity: Utilisateur::class)]
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $updatedAt = null;
+
+    #[ORM\ManyToMany(targetEntity: Utilisateur::class, inversedBy: 'adminRestaurants')]
     private Collection $administrateur;
 
     public function __construct()
@@ -97,6 +106,16 @@ class Restaurant
         $this->tables = new ArrayCollection();
         $this->commandes = new ArrayCollection();
         $this->administrateur = new ArrayCollection();
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeInterface $updatedAt): void
+    {
+        $this->updatedAt = $updatedAt;
     }
 
     public function getId(): ?int
@@ -232,18 +251,6 @@ class Restaurant
     public function setRib(string $rib): static
     {
         $this->rib = $rib;
-
-        return $this;
-    }
-
-    public function getLogo(): ?string
-    {
-        return $this->logo;
-    }
-
-    public function setLogo(string $logo): static
-    {
-        $this->logo = $logo;
 
         return $this;
     }
@@ -421,6 +428,31 @@ class Restaurant
 
         return $this;
     }
+    public function setLogoFile(File $logo)
+    {
+        $this->logoFile = $logo;
+
+        if($logo){
+            $this->updatedAt = new \DateTime('now');
+        }
+    }
+
+    public function getLogoFile(): ?File
+    {
+        return $this->logoFile;
+    }
+
+    public function getLogo(): ?string
+    {
+        return $this->logo;
+    }
+
+    public function setLogo(string $logo): static
+    {
+        $this->logo = $logo;
+
+        return $this;
+    }
 
     /**
      * @return Collection<int, Utilisateur>
@@ -444,5 +476,10 @@ class Restaurant
         $this->administrateur->removeElement($administrateur);
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->nom;
     }
 }

@@ -21,6 +21,13 @@ class RestaurantRepository extends ServiceEntityRepository
         parent::__construct($registry, Restaurant::class);
     }
 
+    public function remove(Restaurant $restaurant): void
+    {
+        $this->_em->remove($restaurant);
+        $this->_em->flush();
+    }
+
+
 //    /**
 //     * @return Restaurant[] Returns an array of Restaurant objects
 //     */

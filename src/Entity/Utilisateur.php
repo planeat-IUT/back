@@ -43,11 +43,15 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'utilisateur', targetEntity: Commande::class, orphanRemoval: true)]
     private Collection $commandes;
 
+    #[ORM\ManyToMany(targetEntity: Restaurant::class, mappedBy: 'administrateur')]
+    private Collection $adminRestaurants;
+
     public function __construct()
     {
         $this->reservations = new ArrayCollection();
         $this->avis = new ArrayCollection();
         $this->commandes = new ArrayCollection();
+        $this->adminRestaurants = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -213,5 +217,32 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function __toString(): string
     {
         return $this->email;
+    }
+
+    /**
+     * @return Collection<int, Restaurant>
+     */
+    public function getAdminRestaurants(): Collection
+    {
+        return $this->adminRestaurants;
+    }
+
+    public function addAdminRestaurant(Restaurant $adminRestaurant): static
+    {
+        if (!$this->adminRestaurants->contains($adminRestaurant)) {
+            $this->adminRestaurants->add($adminRestaurant);
+            $adminRestaurant->addAdministrateur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAdminRestaurant(Restaurant $adminRestaurant): static
+    {
+        if ($this->adminRestaurants->removeElement($adminRestaurant)) {
+            $adminRestaurant->removeAdministrateur($this);
+        }
+
+        return $this;
     }
 }

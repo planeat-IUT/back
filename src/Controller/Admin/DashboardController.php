@@ -5,9 +5,11 @@ namespace App\Controller\Admin;
 use App\Constants\RoleConstant;
 use App\Entity\Allergene;
 use App\Entity\Categorie;
+use App\Entity\Plat;
 use App\Entity\Restaurant;
 use App\Entity\Utilisateur;
 use App\Repository\UtilisateurRepository;
+use App\Services\RestaurantService;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Config\UserMenu;
@@ -21,6 +23,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class DashboardController extends AbstractDashboardController
 {
     public function __construct(
+        private readonly RestaurantService $restaurantService,
     )
     {
     }
@@ -46,17 +49,22 @@ class DashboardController extends AbstractDashboardController
 
     public function configureMenuItems(): iterable
     {
-        yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
+        $items = [];
+        if($this->isGranted(RoleConstant::ROLE_ADMIN)){
+            $items[] = MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
+            $items[] = MenuItem::section('Gestion des données');
+            $items[] = MenuItem::linkToCrud('Utilisateurs', 'fa fa-user', Utilisateur::class);
+            $items[] = MenuItem::section('Gestion des Restaurants');
+            $items[] = MenuItem::linkToCrud('Restaurants', 'fa fa-utensils', Restaurant::class);
+            $items[] = MenuItem::linkToCrud('Plats', 'fa fa-utensils', Plat::class);
+            $items[] = MenuItem::subMenu('Ressources', 'fa  fa-bars')->setSubItems([
+                MenuItem::linkToCrud('Catégories', 'fa fa-bars', Categorie::class),
+                MenuItem::linkToCrud('Allergènes', 'fa fa-bars', Allergene::class),
+            ]);
+        }
+//        $items = array_merge($items, $this->restaurantService->configureMenuItems());
 
-        yield MenuItem::section('Gestion des données');
-        yield MenuItem::linkToCrud('Utilisateurs', 'fa fa-user', Utilisateur::class);
-
-        yield MenuItem::section('Gestion des Restaurants');
-        yield MenuItem::linkToCrud('Restaurants', 'fa fa-utensils', Restaurant::class);
-        yield MenuItem::subMenu('Ressources', 'fa  fa-bars')->setSubItems([
-            MenuItem::linkToCrud('Catégories', 'fa list-alt', Categorie::class),
-            MenuItem::linkToCrud('Allergènes', 'fa apple', Allergene::class),
-        ]);
+        return $items;
 
     }
 
