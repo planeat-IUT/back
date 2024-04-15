@@ -21,6 +21,29 @@ class PlatRepository extends ServiceEntityRepository
         parent::__construct($registry, Plat::class);
     }
 
+    public function findByFilters(array $filters): array
+    {
+        $queryBuilder = $this->createQueryBuilder('p');
+
+        foreach ($filters as $key => $value) {
+            switch ($key) {
+                case 'restaurant':
+                    $queryBuilder
+                        ->andWhere('p.restaurant = :restaurant')
+                        ->setParameter('restaurant', $value);
+                    break;
+                case 'clickncollect':
+                    $queryBuilder
+                        ->andWhere('p.clickncollect = :clickncollect')
+                        ->setParameter('clickncollect', $value);
+                    break;
+            }
+        }
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+
 //    /**
 //     * @return Plat[] Returns an array of Plat objects
 //     */

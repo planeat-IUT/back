@@ -98,6 +98,18 @@ class Restaurant
     #[ORM\ManyToMany(targetEntity: Utilisateur::class, inversedBy: 'adminRestaurants')]
     private Collection $administrateur;
 
+    #[ORM\Column(nullable: true)]
+    #[Groups(['restaurant:read'])]
+    private ?bool $clickCollect = null;
+
+    #[ORM\Column(length: 255)]
+    #[Groups(['restaurant:read'])]
+    private ?string $type = null;
+
+    #[ORM\Column]
+    #[Groups(['restaurant:read'])]
+    private ?float $prix = null;
+
     public function __construct()
     {
         $this->reservations = new ArrayCollection();
@@ -255,6 +267,18 @@ class Restaurant
         return $this;
     }
 
+    public function getLogo(): ?string
+    {
+        return $this->logo;
+    }
+
+    public function setLogo(string $logo): static
+    {
+        $this->logo = $logo;
+
+        return $this;
+    }
+
     public function getNbTable(): ?int
     {
         return $this->nb_table;
@@ -275,6 +299,18 @@ class Restaurant
     public function setADecouvrir(?bool $a_decouvrir): static
     {
         $this->a_decouvrir = $a_decouvrir;
+
+        return $this;
+    }
+
+    public function isClickCollect(): ?bool
+    {
+        return $this->clickCollect;
+    }
+
+    public function setClickCollect(bool $clickCollect): static
+    {
+        $this->clickCollect = $clickCollect;
 
         return $this;
     }
@@ -428,6 +464,30 @@ class Restaurant
 
         return $this;
     }
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): static
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getPrix(): ?float
+    {
+        return $this->prix;
+    }
+
+    public function setPrix(?float $prix): static
+    {
+        $this->prix = $prix;
+
+        return $this;
+    }
+
     public function setLogoFile(File $logo)
     {
         $this->logoFile = $logo;
@@ -440,18 +500,6 @@ class Restaurant
     public function getLogoFile(): ?File
     {
         return $this->logoFile;
-    }
-
-    public function getLogo(): ?string
-    {
-        return $this->logo;
-    }
-
-    public function setLogo(string $logo): static
-    {
-        $this->logo = $logo;
-
-        return $this;
     }
 
     /**

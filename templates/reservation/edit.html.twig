@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier la réservation{% endblock %}
+
+{% block body %}
+    <h1>Modifier la réservation</h1>
+
+    {{ form_start(reservationForm) }}
+    {{ form_row(reservationForm.dateDebut) }}
+    {{ form_row(reservationForm.nbPersonnes) }}
+    {{ form_row(reservationForm.utilisateur) }}
+    {{ form_row(reservationForm.restaurant) }}
+    {{ form_row(reservationForm.type) }}
+    {{ form_row(reservationForm.tableSelect) }}
+
+    <button type="submit" class="btn">Enregistrer les modifications</button>
+    {{ form_end(reservationForm) }}
+{% endblock %}

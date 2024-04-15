@@ -21,6 +21,26 @@ class ReservationRepository extends ServiceEntityRepository
         parent::__construct($registry, Reservation::class);
     }
 
+    public function findByFilters(array $filters): array
+    {
+        $queryBuilder = $this->createQueryBuilder('res');
+
+        foreach ($filters as $key => $value) {
+            switch ($key) {
+                case 'restaurant':
+                    $queryBuilder->andWhere('res.restaurant = :restaurant')
+                        ->setParameter('restaurant', $value);
+                    break;
+                case 'utilisateur':
+                    $queryBuilder->andWhere('res.utilisateur = :utilisateur')
+                        ->setParameter('utilisateur', $value);
+                    break;
+            }
+        }
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
 //    /**
 //     * @return Reservation[] Returns an array of Reservation objects
 //     */

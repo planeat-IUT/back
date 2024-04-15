@@ -3,6 +3,17 @@ controllers:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
-    
+
 api_login_check:
     path: /api/user/login_check
+    
+app_edit_restaurant:
+    path: '/restaurant/{id}/edit'
+    controller: 'App\Controller\RestaurantController::edit'
+    methods: ['GET', 'POST']
+
+app_edit_plat:
+    path: /plat/{id}/edit
+    controller: 'App\Controller\PlatController::edit'
+    methods: ['GET', 'POST']
+

@@ -1,13 +1,27 @@
-{% extends 'base.html.twig' %}
-
-{% block title %}Edit Restaurant{% endblock %}
+{% block title %}Modifier le restaurant {{ restaurant.nom }}{% endblock %}
 
 {% block body %}
-    <h1>Edit Restaurant</h1>
+    <h1>Modifier le restaurant {{ restaurant.nom }}</h1>
 
-    {{ include('restaurant/_form.html.twig', {'button_label': 'Update'}) }}
+    {{ form_start(restaurantForm) }}
+    {{ form_row(restaurantForm.nom) }}
+    {{ form_row(restaurantForm.description) }}
+    {{ form_row(restaurantForm.adresse) }}
+    {{ form_row(restaurantForm.complement) }}
+    {{ form_row(restaurantForm.code_postal) }}
+    {{ form_row(restaurantForm.siret) }}
+    {{ form_row(restaurantForm.longitude) }}
+    {{ form_row(restaurantForm.latitude) }}
+    {{ form_row(restaurantForm.mail) }}
+    {{ form_row(restaurantForm.telephone) }}
+    {{ form_row(restaurantForm.rib) }}
+    {{ form_row(restaurantForm.logo) }}
+    {{ form_row(restaurantForm.nb_table) }}
+    {{ form_row(restaurantForm.a_decouvrir) }}
+    {{ form_row(restaurantForm.clickCollect) }}
+    {{ form_row(restaurantForm.type) }}
+    {{ form_row(restaurantForm.prix) }}
 
-    <a href="{{ path('app_restaurant_index') }}">back to list</a>
-
-    {{ include('restaurant/_delete_form.html.twig') }}
+    <button type="submit" class="btn">Enregistrer les modifications</button>
+    {{ form_end(restaurantForm) }}
 {% endblock %}
