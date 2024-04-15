@@ -3,9 +3,14 @@
 namespace App\Entity;
 
 use App\Repository\RestaurantRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
+#[Vich\Uploadable]
 #[ORM\Entity(repositoryClass: RestaurantRepository::class)]
 class Restaurant
 {
@@ -57,9 +62,12 @@ class Restaurant
     #[ORM\Column(length: 255)]
     private ?string $rib = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type: 'string', length: 255)]
     #[Groups(['restaurant:read'])]
-    private ?string $logo = null;
+    private ?string $logo = '';
+
+    #[Vich\UploadableField(mapping: 'restaurant_image', fileNameProperty: 'logo')]
+    private ?File $logoFile = null;
 
     #[ORM\Column]
     #[Groups(['restaurant:read'])]
@@ -68,6 +76,27 @@ class Restaurant
     #[ORM\Column(nullable: true)]
     #[Groups(['restaurant:read'])]
     private ?bool $a_decouvrir = null;
+
+    #[ORM\OneToMany(mappedBy: 'restaurant', targetEntity: Reservation::class, orphanRemoval: true)]
+    private Collection $reservations;
+
+    #[ORM\OneToMany(mappedBy: 'restaurant', targetEntity: Avis::class)]
+    private Collection $avis;
+
+    #[ORM\OneToMany(mappedBy: 'restaurant', targetEntity: Plat::class, cascade: ["persist"], orphanRemoval: true)]
+    private Collection $plats;
+
+    #[ORM\OneToMany(mappedBy: 'restaurant', targetEntity: Table::class, orphanRemoval: true)]
+    private Collection $tables;
+
+    #[ORM\OneToMany(mappedBy: 'restaurant', targetEntity: Commande::class, orphanRemoval: true)]
+    private Collection $commandes;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $updatedAt = null;
+
+    #[ORM\ManyToMany(targetEntity: Utilisateur::class, inversedBy: 'adminRestaurants')]
+    private Collection $administrateur;
 
     #[ORM\Column(nullable: true)]
     #[Groups(['restaurant:read'])]
@@ -80,6 +109,26 @@ class Restaurant
     #[ORM\Column]
     #[Groups(['restaurant:read'])]
     private ?float $prix = null;
+
+    public function __construct()
+    {
+        $this->reservations = new ArrayCollection();
+        $this->avis = new ArrayCollection();
+        $this->plats = new ArrayCollection();
+        $this->tables = new ArrayCollection();
+        $this->commandes = new ArrayCollection();
+        $this->administrateur = new ArrayCollection();
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeInterface $updatedAt): void
+    {
+        $this->updatedAt = $updatedAt;
+    }
 
     public function getId(): ?int
     {
@@ -266,6 +315,155 @@ class Restaurant
         return $this;
     }
 
+    /**
+     * @return Collection<int, Reservation>
+     */
+    public function getReservations(): Collection
+    {
+        return $this->reservations;
+    }
+
+    public function addReservation(Reservation $reservation): static
+    {
+        if (!$this->reservations->contains($reservation)) {
+            $this->reservations->add($reservation);
+            $reservation->setRestaurant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReservation(Reservation $reservation): static
+    {
+        if ($this->reservations->removeElement($reservation)) {
+            // set the owning side to null (unless already changed)
+            if ($reservation->getRestaurant() === $this) {
+                $reservation->setRestaurant(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Avis>
+     */
+    public function getAvis(): Collection
+    {
+        return $this->avis;
+    }
+
+    public function addAvi(Avis $avi): static
+    {
+        if (!$this->avis->contains($avi)) {
+            $this->avis->add($avi);
+            $avi->setRestaurant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAvi(Avis $avi): static
+    {
+        if ($this->avis->removeElement($avi)) {
+            // set the owning side to null (unless already changed)
+            if ($avi->getRestaurant() === $this) {
+                $avi->setRestaurant(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Plat>
+     */
+    public function getPlats(): Collection
+    {
+        return $this->plats;
+    }
+
+    public function addPlat(Plat $plat): static
+    {
+        if (!$this->plats->contains($plat)) {
+            $this->plats->add($plat);
+            $plat->setRestaurant($this);
+        }
+
+        return $this;
+    }
+
+    public function removePlat(Plat $plat): static
+    {
+        if ($this->plats->removeElement($plat)) {
+            // set the owning side to null (unless already changed)
+            if ($plat->getRestaurant() === $this) {
+                $plat->setRestaurant(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Table>
+     */
+    public function getTables(): Collection
+    {
+        return $this->tables;
+    }
+
+    public function addTable(Table $table): static
+    {
+        if (!$this->tables->contains($table)) {
+            $this->tables->add($table);
+            $table->setRestaurant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTable(Table $table): static
+    {
+        if ($this->tables->removeElement($table)) {
+            // set the owning side to null (unless already changed)
+            if ($table->getRestaurant() === $this) {
+                $table->setRestaurant(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Commande>
+     */
+    public function getCommandes(): Collection
+    {
+        return $this->commandes;
+    }
+
+    public function addCommande(Commande $commande): static
+    {
+        if (!$this->commandes->contains($commande)) {
+            $this->commandes->add($commande);
+            $commande->setRestaurant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommande(Commande $commande): static
+    {
+        if ($this->commandes->removeElement($commande)) {
+            // set the owning side to null (unless already changed)
+            if ($commande->getRestaurant() === $this) {
+                $commande->setRestaurant(null);
+            }
+        }
+
+        return $this;
+    }
     public function getType(): ?string
     {
         return $this->type;
@@ -288,5 +486,60 @@ class Restaurant
         $this->prix = $prix;
 
         return $this;
+    }
+
+    public function setLogoFile(File $logo)
+    {
+        $this->logoFile = $logo;
+
+        if($logo){
+            $this->updatedAt = new \DateTime('now');
+        }
+    }
+
+    public function getLogoFile(): ?File
+    {
+        return $this->logoFile;
+    }
+
+    public function getLogo(): ?string
+    {
+        return $this->logo;
+    }
+
+    public function setLogo(string $logo): static
+    {
+        $this->logo = $logo;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Utilisateur>
+     */
+    public function getAdministrateur(): Collection
+    {
+        return $this->administrateur;
+    }
+
+    public function addAdministrateur(Utilisateur $administrateur): static
+    {
+        if (!$this->administrateur->contains($administrateur)) {
+            $this->administrateur->add($administrateur);
+        }
+
+        return $this;
+    }
+
+    public function removeAdministrateur(Utilisateur $administrateur): static
+    {
+        $this->administrateur->removeElement($administrateur);
+
+        return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->nom;
     }
 }

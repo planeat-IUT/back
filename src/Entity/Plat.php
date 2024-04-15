@@ -8,7 +8,10 @@ use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
+#[Vich\Uploadable]
 #[ORM\Entity(repositoryClass: PlatRepository::class)]
 class Plat
 {
@@ -30,9 +33,12 @@ class Plat
     #[Groups(['plat:read'])]
     private ?float $prix = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     #[Groups(['plat:read'])]
     private ?string $photo = null;
+
+    #[Vich\UploadableField(mapping: 'plat_image', fileNameProperty: 'photo')]
+    private ?File $photoFile = null;
 
     #[ORM\Column]
     #[Groups(['plat:read'])]
@@ -60,9 +66,22 @@ class Plat
     #[Groups(['plat:read'])]
     private Collection $allergene;
 
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $updatedAt = null;
+
     public function __construct()
     {
         $this->allergene = new ArrayCollection();
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeInterface $updatedAt): void
+    {
+        $this->updatedAt = $updatedAt;
     }
 
     public function getId(): ?int
@@ -212,5 +231,26 @@ class Plat
         $this->allergene->removeElement($allergene);
 
         return $this;
+    }
+
+    public function getPhotoFile(): ?File
+    {
+        return $this->photoFile;
+    }
+
+    public function setPhotoFile(?File $photoFile): static
+    {
+        $this->photoFile = $photoFile;
+
+        if ($this->photoFile) {
+            $this->updatedAt = new \DateTime();
+        }
+
+        return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->nom;
     }
 }
