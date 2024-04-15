@@ -502,18 +502,6 @@ class Restaurant
         return $this->logoFile;
     }
 
-    public function getLogo(): ?string
-    {
-        return $this->logo;
-    }
-
-    public function setLogo(string $logo): static
-    {
-        $this->logo = $logo;
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, Utilisateur>
      */
