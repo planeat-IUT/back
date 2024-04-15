@@ -100,6 +100,9 @@ final class UtilisateurController extends \Symfony\Bundle\FrameworkBundle\Contro
     #[Route(path: '/create-dev-admin', name: 'create_dev_admin')]
     public function createDevAdmin(UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
     {
+        if($this->container->getParameter('kernel.environment') !== 'dev'){
+            return new Response('This route is only available in dev environment');
+        }
         $user = new Utilisateur();
         $user
             ->setEmail('admin@admin.fr')
