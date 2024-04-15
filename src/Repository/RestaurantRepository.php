@@ -21,6 +21,34 @@ class RestaurantRepository extends ServiceEntityRepository
         parent::__construct($registry, Restaurant::class);
     }
 
+    public function findByFilters(array $filters): array
+    {
+        $queryBuilder = $this->createQueryBuilder('r');
+
+        foreach ($filters as $key => $value) {
+            switch ($key) {
+                case 'click_collect':
+                    $queryBuilder->andWhere('r.click_collect = :click_collect')
+                        ->setParameter('click_collect', $value);
+                    break;
+                case 'type':
+                    $queryBuilder->andWhere('r.type = :type')
+                        ->setParameter('type', $value);
+                    break;
+                case 'prix':
+                    $queryBuilder->andWhere('r.prix = :prix')
+                        ->setParameter('prix', $value);
+                    break;
+                case 'a_decouvrir':
+                    $queryBuilder->andWhere('r.a_decouvrir = :a_decouvrir')
+                        ->setParameter('a_decouvrir', $value);
+                    break;
+            }
+        }
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
 //    /**
 //     * @return Restaurant[] Returns an array of Restaurant objects
 //     */

@@ -3,8 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\RestaurantRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -71,29 +69,17 @@ class Restaurant
     #[Groups(['restaurant:read'])]
     private ?bool $a_decouvrir = null;
 
-    #[ORM\OneToMany(mappedBy: 'Restaurant', targetEntity: Reservation::class, orphanRemoval: true)]
-    private Collection $reservations;
+    #[ORM\Column(nullable: true)]
+    #[Groups(['restaurant:read'])]
+    private ?bool $clickCollect = null;
 
-    #[ORM\OneToMany(mappedBy: 'Restaurant', targetEntity: Avis::class)]
-    private Collection $avis;
+    #[ORM\Column(length: 255)]
+    #[Groups(['restaurant:read'])]
+    private ?string $type = null;
 
-    #[ORM\OneToMany(mappedBy: 'restaurant', targetEntity: Plat::class, orphanRemoval: true)]
-    private Collection $plats;
-
-    #[ORM\OneToMany(mappedBy: 'restaurant', targetEntity: Table::class, orphanRemoval: true)]
-    private Collection $tables;
-
-    #[ORM\OneToMany(mappedBy: 'restaurant', targetEntity: Commande::class, orphanRemoval: true)]
-    private Collection $commandes;
-
-    public function __construct()
-    {
-        $this->reservations = new ArrayCollection();
-        $this->avis = new ArrayCollection();
-        $this->plats = new ArrayCollection();
-        $this->tables = new ArrayCollection();
-        $this->commandes = new ArrayCollection();
-    }
+    #[ORM\Column]
+    #[Groups(['restaurant:read'])]
+    private ?float $prix = null;
 
     public function getId(): ?int
     {
@@ -268,152 +254,38 @@ class Restaurant
         return $this;
     }
 
-    /**
-     * @return Collection<int, Reservation>
-     */
-    public function getReservations(): Collection
+    public function isClickCollect(): ?bool
     {
-        return $this->reservations;
+        return $this->clickCollect;
     }
 
-    public function addReservation(Reservation $reservation): static
+    public function setClickCollect(bool $clickCollect): static
     {
-        if (!$this->reservations->contains($reservation)) {
-            $this->reservations->add($reservation);
-            $reservation->setRestaurant($this);
-        }
+        $this->clickCollect = $clickCollect;
 
         return $this;
     }
 
-    public function removeReservation(Reservation $reservation): static
+    public function getType(): ?string
     {
-        if ($this->reservations->removeElement($reservation)) {
-            // set the owning side to null (unless already changed)
-            if ($reservation->getRestaurant() === $this) {
-                $reservation->setRestaurant(null);
-            }
-        }
+        return $this->type;
+    }
+
+    public function setType(string $type): static
+    {
+        $this->type = $type;
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, Avis>
-     */
-    public function getAvis(): Collection
+    public function getPrix(): ?float
     {
-        return $this->avis;
+        return $this->prix;
     }
 
-    public function addAvi(Avis $avi): static
+    public function setPrix(?float $prix): static
     {
-        if (!$this->avis->contains($avi)) {
-            $this->avis->add($avi);
-            $avi->setRestaurant($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAvi(Avis $avi): static
-    {
-        if ($this->avis->removeElement($avi)) {
-            // set the owning side to null (unless already changed)
-            if ($avi->getRestaurant() === $this) {
-                $avi->setRestaurant(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Plat>
-     */
-    public function getPlats(): Collection
-    {
-        return $this->plats;
-    }
-
-    public function addPlat(Plat $plat): static
-    {
-        if (!$this->plats->contains($plat)) {
-            $this->plats->add($plat);
-            $plat->setRestaurant($this);
-        }
-
-        return $this;
-    }
-
-    public function removePlat(Plat $plat): static
-    {
-        if ($this->plats->removeElement($plat)) {
-            // set the owning side to null (unless already changed)
-            if ($plat->getRestaurant() === $this) {
-                $plat->setRestaurant(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Table>
-     */
-    public function getTables(): Collection
-    {
-        return $this->tables;
-    }
-
-    public function addTable(Table $table): static
-    {
-        if (!$this->tables->contains($table)) {
-            $this->tables->add($table);
-            $table->setRestaurant($this);
-        }
-
-        return $this;
-    }
-
-    public function removeTable(Table $table): static
-    {
-        if ($this->tables->removeElement($table)) {
-            // set the owning side to null (unless already changed)
-            if ($table->getRestaurant() === $this) {
-                $table->setRestaurant(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Commande>
-     */
-    public function getCommandes(): Collection
-    {
-        return $this->commandes;
-    }
-
-    public function addCommande(Commande $commande): static
-    {
-        if (!$this->commandes->contains($commande)) {
-            $this->commandes->add($commande);
-            $commande->setRestaurant($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCommande(Commande $commande): static
-    {
-        if ($this->commandes->removeElement($commande)) {
-            // set the owning side to null (unless already changed)
-            if ($commande->getRestaurant() === $this) {
-                $commande->setRestaurant(null);
-            }
-        }
+        $this->prix = $prix;
 
         return $this;
     }

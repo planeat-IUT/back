@@ -1,0 +1,19 @@
+{% block title %}Modifier le plat {{ plat.nom }}{% endblock %}
+
+{% block body %}
+    <h1>Modifier le plat {{ plat.nom }}</h1>
+
+    {{ form_start(platForm) }}
+    {{ form_row(platForm.nom) }}
+    {{ form_row(platForm.categorie) }}
+    {{ form_row(platForm.restaurant) }}
+    {{ form_row(platForm.description) }}
+    {{ form_row(platForm.prix) }}
+    {{ form_row(platForm.photo) }}
+    {{ form_row(platForm.clickncollect) }}
+    {{ form_row(platForm.platDuJour) }}
+    {{ form_row(platForm.specialite) }}
+
+    <button type="submit" class="btn">Enregistrer les modifications</button>
+    {{ form_end(platForm) }}
+{% endblock %}

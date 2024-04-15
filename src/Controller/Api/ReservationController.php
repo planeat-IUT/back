@@ -2,9 +2,9 @@
 
 namespace App\Controller\Api;
 
-use App\Entity\Restaurant;
+use App\Entity\Reservation;
 use App\Form\RestaurantType;
-use App\Repository\RestaurantRepository;
+use App\Repository\ReservationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,51 +15,51 @@ use Symfony\Component\Serializer\SerializerInterface;
 use OpenApi\Attributes as OA;
 use Nelmio\ApiDocBundle\Annotation\Model;
 
-#[Route('api/restaurants')]
-class RestaurantController extends AbstractController
+#[Route('api/reservations')]
+class ReservationController extends AbstractController
 {
     public function __construct(
-        private readonly RestaurantRepository $restaurantRepository
+        private readonly ReservationRepository $reservationRepository
     ) {
     }
 
 
-    #[Route('/', name: 'api_restaurant_index', methods: ['GET'])]
+    #[Route('/', name: 'api_reservation_index', methods: ['GET'])]
     #[OA\Response(
         response: 201,
-        description: 'show all restaurants w/o filters',
+        description: 'show all reservations w/o filters',
         content: new OA\JsonContent(
             type: 'array',
-            items: new OA\Items(ref: new Model(type: Restaurant::class, groups: ['restaurant']))
+            items: new OA\Items(ref: new Model(type: Reservation::class, groups: ['reservation']))
         )
     )]
     #[OA\RequestBody(
         content: new OA\JsonContent(
             ref: new Model(
-                type: Restaurant::class,
+                type: Reservation::class,
             )
         )
     )]
-    #[OA\Tag(name: 'restaurants')]
+    #[OA\Tag(name: 'reservations')]
     public function index(Request $request, SerializerInterface $serializer): Response
     {
         $filters = $request->query->all();
 
-        $restaurants = $this->restaurantRepository->findByFilters($filters);
+        $reservations = $this->reservationRepository->findByFilters($filters);
 
         return new Response(
-            $serializer->serialize($restaurants, 'json', ['groups' => 'restaurant:read']),
+            $serializer->serialize($reservations, 'json', ['groups' => 'reservation:read']),
             200,
             ['Content-Type' => 'application/json']
         );
     }
 
-    #[Route('/{id}', name: 'api_restaurant_show', methods: ['GET'])]
-    #[OA\Tag(name: 'restaurants')]
-    public function show(Restaurant $restaurant, SerializerInterface $serializer): Response
+    #[Route('/{id}', name: 'api_reservation_show', methods: ['GET'])]
+    #[OA\Tag(name: 'reservations')]
+    public function show(Reservation $reservation, SerializerInterface $serializer): Response
     {
         return new Response(
-            $serializer->serialize($restaurant, 'json', ['groups' => 'restaurant:read']),
+            $serializer->serialize($reservation, 'json', ['groups' => 'reservation:read']),
             200,
             ['Content-Type' => 'application/json']
         );

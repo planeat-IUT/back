@@ -6,6 +6,7 @@ use App\Repository\AllergeneRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: AllergeneRepository::class)]
 class Allergene
@@ -13,9 +14,11 @@ class Allergene
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['allergene:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['allergene:read'])]
     private ?string $nom = null;
 
     #[ORM\ManyToMany(targetEntity: Plat::class, mappedBy: 'allergene')]
